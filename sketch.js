@@ -1,21 +1,32 @@
 let img;
-const imgSize = 300;
 const numEffects = 5;
+let imgAspectRatio;
 
 function preload() {
   img = loadImage('AM.jpg');
 }
 
 function setup() {
-  createCanvas(imgSize, imgSize);
+  createCanvas(windowWidth, windowHeight);
   imageMode(CENTER);
+  imgAspectRatio = img.width / img.height;
 }
 
 function draw() {
   background(220);
   
+  // Calculate responsive image size
+  let imgWidth, imgHeight;
+  if (width / height > imgAspectRatio) {
+    imgHeight = height;
+    imgWidth = imgHeight * imgAspectRatio;
+  } else {
+    imgWidth = width;
+    imgHeight = imgWidth / imgAspectRatio;
+  }
+  
   // Display the image
-  image(img, width/2, height/2, imgSize, imgSize);
+  image(img, width/2, height/2, imgWidth, imgHeight);
   
   // Check if mouse is over the image
   if (mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height) {
@@ -40,4 +51,8 @@ function draw() {
         break;
     }
   }
+}
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
 }
