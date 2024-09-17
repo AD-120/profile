@@ -3,6 +3,7 @@ let tmuna;
 let state = 0;
 let gifPlayCount = 0;
 let gifStartTime;
+let canvasSize = 400;
 
 function preload() {
   gif = loadImage("profile-gif_2.gif");
@@ -10,8 +11,9 @@ function preload() {
 }
 
 function setup() {
-  createCanvas(500, 500, WEBGL);
+  createCanvas(canvasSize, canvasSize, WEBGL);
   gifStartTime = millis();
+  windowResized(); // Call this to set initial responsive size
 }
 
 function draw() {
@@ -37,19 +39,19 @@ function draw() {
     texture(tmuna);
     rotateX(radians(frameCount));
     rotateY(radians(frameCount));
-    box(200);
+    box(width * 0.4);
   } else if (state === 2) {
     // Grid of rotating cubes
     texture(tmuna);
     translate(-width / 2, -height / 2);
-    for (let x = 40; x < 500; x += 100) {
-      for (let y = 40; y < 500; y += 100) {
+    for (let x = width * 0.08; x < width; x += width * 0.2) {
+      for (let y = height * 0.08; y < height; y += height * 0.2) {
         push();
         translate(x, y);
         rotateY(radians(frameCount));
         rotateX(radians(frameCount));
         noStroke();
-        box(50, 50, 50);
+        box(width * 0.1);
         pop();
       }
     }
@@ -60,14 +62,14 @@ function draw() {
     rotateY(radians(frameCount));
     rotateZ(radians(frameCount));
     translate(-width / 2, -height / 2);
-    for (let x = 40; x < 500; x += 100) {
-      for (let y = 40; y < 500; y += 100) {
+    for (let x = width * 0.08; x < width; x += width * 0.2) {
+      for (let y = height * 0.08; y < height; y += height * 0.2) {
         push();
         translate(x, y);
         rotateY(radians(frameCount));
         rotateX(radians(frameCount));
         noStroke();
-        box(50, 50, 50);
+        box(width * 0.1);
         pop();
       }
     }
@@ -81,4 +83,9 @@ function mousePressed() {
     gifPlayCount = 0;
     gifStartTime = millis();
   }
+}
+
+function windowResized() {
+  let size = min(windowWidth, windowHeight, canvasSize);
+  resizeCanvas(size, size);
 }
