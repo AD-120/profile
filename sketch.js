@@ -1,58 +1,84 @@
-let img;
-const numEffects = 5;
-let imgAspectRatio;
+let gif;
+let tmuna;
+let state = 0;
+let gifPlayCount = 0;
+let gifStartTime;
 
 function preload() {
-  img = loadImage('AM.jpg');
+  gif = loadImage("profile-gif_2.gif");
+  tmuna = loadImage("AM.jpg");
 }
 
 function setup() {
-  createCanvas(windowWidth, windowHeight);
-  imageMode(CENTER);
-  imgAspectRatio = img.width / img.height;
+  createCanvas(500, 500, WEBGL);
+  gifStartTime = millis();
 }
 
 function draw() {
-  background(220);
+  background(255);
   
-  // Calculate responsive image size
-  let imgWidth, imgHeight;
-  if (width / height > imgAspectRatio) {
-    imgHeight = height;
-    imgWidth = imgHeight * imgAspectRatio;
-  } else {
-    imgWidth = width;
-    imgHeight = imgWidth / imgAspectRatio;
-  }
-  
-  // Display the image
-  image(img, width/2, height/2, imgWidth, imgHeight);
-  
-  // Check if mouse is over the image
-  if (mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height) {
-    // Apply different effects based on mouse position
-    let effect = floor(map(mouseX, 0, width, 0, numEffects));
-    
-    switch(effect) {
-      case 0:
-        filter(INVERT);
-        break;
-      case 1:
-        filter(POSTERIZE, 4);
-        break;
-      case 2:
-        filter(BLUR, 3);
-        break;
-      case 3:
-        filter(ERODE);
-        break;
-      case 4:
-        filter(THRESHOLD);
-        break;
+  if (state === 0) {
+    // Show animated GIF
+    if (gifPlayCount < 3) {
+      image(gif, -width/2, -height/2, width, height);
+      
+      // Check if the GIF has completed one loop
+      if (millis() - gifStartTime > gif.duration * 1000) {
+        gifPlayCount++;
+        gifStartTime = millis();
+      }
+    } else {
+      // Display the first frame of the GIF when it's done playing
+      image(gif.get(0, 0, gif.width, gif.height), -width/2, -height/2, width, height);
+    }
+  } else if (state === 1) {
+    // Rotating cube
+    noStroke();
+    texture(tmuna);
+    rotateX(radians(frameCount));
+    rotateY(radians(frameCount));
+    box(200);
+  } else if (state === 2) {
+    // Grid of rotating cubes
+    texture(tmuna);
+    translate(-width / 2, -height / 2);
+    for (let x = 40; x < 500; x += 100) {
+      for (let y = 40; y < 500; y += 100) {
+        push();
+        translate(x, y);
+        rotateY(radians(frameCount));
+        rotateX(radians(frameCount));
+        noStroke();
+        box(50, 50, 50);
+        pop();
+      }
+    }
+  } else if (state === 3) {
+    // Rotating grid of cubes
+    texture(tmuna);
+    rotateX(radians(frameCount));
+    rotateY(radians(frameCount));
+    rotateZ(radians(frameCount));
+    translate(-width / 2, -height / 2);
+    for (let x = 40; x < 500; x += 100) {
+      for (let y = 40; y < 500; y += 100) {
+        push();
+        translate(x, y);
+        rotateY(radians(frameCount));
+        rotateX(radians(frameCount));
+        noStroke();
+        box(50, 50, 50);
+        pop();
+      }
     }
   }
 }
 
-function windowResized() {
-  resizeCanvas(windowWidth, windowHeight);
+function mousePressed() {
+  state = (state + 1) % 4;
+  if (state === 0) {
+    // Reset GIF play count when cycling back to the GIF state
+    gifPlayCount = 0;
+    gifStartTime = millis();
+  }
 }
